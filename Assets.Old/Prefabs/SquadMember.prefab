@@ -46,7 +46,6 @@ GameObject:
   - component: {fileID: 9137715874150261144}
   - component: {fileID: 1563587572116228970}
   - component: {fileID: 5834853056214058006}
-  - component: {fileID: -3542357135960842020}
   m_Layer: 0
   m_Name: SquadMember
   m_TagString: Untagged
@@ -193,19 +192,3 @@ MonoBehaviour:
   player: {fileID: 3507582992987789808}
   offset: {x: 0, y: 0, z: 0}
   followSpeed: 10
---- !u!114 &-3542357135960842020
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8831329525579829732}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c0129e34306d1b4895db5249b0a8fe3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
-  maxHealth: 10
-  currentHealth: 10
-  destroyOnDeath: 1
-  triggerGameOverOnDeath: 0

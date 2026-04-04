@@ -1,12 +1,13 @@
 using UnityEngine;
 
-public class RecruitSpawner : MonoBehaviour
+public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField] private GameObject recruitPickupPrefab;
-    [SerializeField] private float spawnInterval = 2f;
+    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private float spawnInterval = 1.5f;
     [SerializeField] private float spawnZ = 30f;
     [SerializeField] private float spawnY = 1f;
     [SerializeField] private float laneOffset = 3.2f;
+    [SerializeField] private float laneSpread = 1f;
 
     private float timer;
 
@@ -17,18 +18,19 @@ public class RecruitSpawner : MonoBehaviour
         if (timer >= spawnInterval)
         {
             timer = 0f;
-            SpawnRecruit();
+            SpawnEnemy();
         }
     }
 
-    private void SpawnRecruit()
+    private void SpawnEnemy()
     {
         int lane = Random.Range(-1, 2);
 
-        float xPos = lane * laneOffset;
+        float randomOffset = Random.Range(-laneSpread, laneSpread);
+        float xPos = (lane * laneOffset) + randomOffset;
 
         Vector3 spawnPosition = new Vector3(xPos, spawnY, spawnZ);
 
-        Instantiate(recruitPickupPrefab, spawnPosition, Quaternion.identity);
+        Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
     }
 }

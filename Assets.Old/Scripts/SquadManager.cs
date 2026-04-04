@@ -7,9 +7,6 @@ public class SquadManager : MonoBehaviour
     [SerializeField] private Transform player;
     [SerializeField] private GameObject squadMemberPrefab;
 
-    [Header("Squad Health")]
-    [SerializeField, Range(0.1f, 2f)] private float squadHealthPercent = 0.5f;
-
     [Header("Formation Size Limits")]
     [SerializeField] private float maxFormationRadius = 2.8f;
     [SerializeField] private float innerRingRadius = 1.2f;
@@ -51,8 +48,6 @@ public class SquadManager : MonoBehaviour
         {
             AddSquadMember();
         }
-
-        CleanupMissingMembers();
         UpdateScaling();
     }
 
@@ -70,80 +65,8 @@ public class SquadManager : MonoBehaviour
             memberWeaponState.CopyFrom(playerWeaponState);
         }
 
-        ApplySquadHealthFromPlayer(member);
-
         squadMembers.Add(member);
         RebuildFormation();
-    }
-
-    public void UpgradePlayerHealth(float amount)
-    {
-        if (amount <= 0f || player == null) return;
-
-        Health playerHealth = player.GetComponent<Health>();
-        if (playerHealth == null) return;
-
-        playerHealth.AddMaxHealth(amount, amount);
-
-        float squadAmount = amount * squadHealthPercent;
-
-        for (int i = squadMembers.Count - 1; i >= 0; i--)
-        {
-            GameObject member = squadMembers[i];
-
-            if (member == null)
-            {
-                squadMembers.RemoveAt(i);
-                continue;
-            }
-
-            Health memberHealth = member.GetComponent<Health>();
-            if (memberHealth != null)
-            {
-                memberHealth.AddMaxHealth(squadAmount, squadAmount);
-            }
-        }
-    }
-
-    private void ApplySquadHealthFromPlayer(GameObject member)
-    {
-        if (member == null || player == null) return;
-
-        Health playerHealth = player.GetComponent<Health>();
-        Health memberHealth = member.GetComponent<Health>();
-
-        if (playerHealth == null || memberHealth == null) return;
-
-        float squadMaxHealth = playerHealth.MaxHealth * squadHealthPercent;
-        memberHealth.SetHealth(squadMaxHealth, true);
-        memberHealth.Died += HandleSquadMemberDied;
-    }
-
-    private void HandleSquadMemberDied(Health deadHealth)
-    {
-        if (deadHealth == null) return;
-
-        squadMembers.Remove(deadHealth.gameObject);
-        RebuildFormation();
-    }
-
-    private void CleanupMissingMembers()
-    {
-        bool removedAny = false;
-
-        for (int i = squadMembers.Count - 1; i >= 0; i--)
-        {
-            if (squadMembers[i] == null)
-            {
-                squadMembers.RemoveAt(i);
-                removedAny = true;
-            }
-        }
-
-        if (removedAny)
-        {
-            RebuildFormation();
-        }
     }
 
     private void RebuildFormation()
@@ -156,8 +79,8 @@ public class SquadManager : MonoBehaviour
             if (member == null) continue;
 
             Vector3 offset = GetPackedOffsetForIndex(i, total);
-            SquadFollower follower = member.GetComponent<SquadFollower>();
 
+            SquadFollower follower = member.GetComponent<SquadFollower>();
             if (follower != null)
             {
                 follower.Initialize(player, offset);
@@ -179,14 +102,15 @@ public class SquadManager : MonoBehaviour
         }
 
         int membersInThisRing = GetMembersInRing(ring, totalMembers);
+
         float ringRadius = GetDynamicRingRadius(ring, membersInThisRing);
 
         float angleDeg;
 
         if (ring == 0)
         {
-            if (indexInRing == 0) angleDeg = 110f;
-            else if (indexInRing == 1) angleDeg = 250f;
+            if (indexInRing == 0) angleDeg = 110f;      // right
+            else if (indexInRing == 1) angleDeg = 250f; // left
             else
             {
                 float[] orderedAngles = GetOrderedAnglesForRing(membersInThisRing);
@@ -198,14 +122,13 @@ public class SquadManager : MonoBehaviour
             float[] orderedAngles = GetOrderedAnglesForRing(membersInThisRing);
             angleDeg = orderedAngles[Mathf.Clamp(indexInRing, 0, orderedAngles.Length - 1)];
         }
-
         float angleRad = angleDeg * Mathf.Deg2Rad;
+
         float x = Mathf.Sin(angleRad) * ringRadius;
         float z = Mathf.Cos(angleRad) * ringRadius;
 
         return new Vector3(x, 0f, z);
     }
-
     private void ApplyScale(float playerScale, float squadScale)
     {
         if (playerTransform != null)
@@ -229,12 +152,12 @@ public class SquadManager : MonoBehaviour
             }
         }
     }
-
     private void UpdateScaling()
     {
         int total = squadMembers.Count + 1;
 
         float t = Mathf.InverseLerp(scaleStartCount, scaleFullCount, total);
+
         float targetPlayerScale = Mathf.Lerp(playerMaxScale, playerMinScale, t);
         float targetSquadScale = Mathf.Lerp(squadMaxScale, squadMinScale, t);
 
@@ -279,6 +202,7 @@ public class SquadManager : MonoBehaviour
 
         float circumferenceNeeded = membersInRing * desiredSpacing;
         float computedRadius = circumferenceNeeded / (2f * Mathf.PI);
+
         float baseRadius = innerRingRadius + ring * outerRingSpacing;
         float finalRadius = Mathf.Max(baseRadius * 0.75f, computedRadius);
 
@@ -301,11 +225,13 @@ public class SquadManager : MonoBehaviour
 
     private float AnglePriority(float angle)
     {
+        // prioritize sides (90° and 270°)
         float diffFromSide = Mathf.Min(
             Mathf.Abs(Mathf.DeltaAngle(angle, 90f)),
             Mathf.Abs(Mathf.DeltaAngle(angle, 270f))
         );
 
+        // push front/back later
         float frontBackPenalty = Mathf.Min(
             Mathf.Abs(Mathf.DeltaAngle(angle, 0f)),
             Mathf.Abs(Mathf.DeltaAngle(angle, 180f))

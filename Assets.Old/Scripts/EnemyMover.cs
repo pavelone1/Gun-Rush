@@ -4,7 +4,6 @@ public class EnemyMover : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 8f;
     [SerializeField] private float destroyZ = -10f;
-    [SerializeField] private float contactDamage = 1f;
 
     private void Update()
     {
@@ -14,16 +13,5 @@ public class EnemyMover : MonoBehaviour
         {
             Destroy(gameObject);
         }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Enemy")) return;
-
-        Health health = other.GetComponent<Health>();
-        if (health == null) return;
-
-        health.TakeDamage(contactDamage);
-        Destroy(gameObject);
     }
 }

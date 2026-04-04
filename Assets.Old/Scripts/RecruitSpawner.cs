@@ -7,6 +7,7 @@ public class RecruitSpawner : MonoBehaviour
     [SerializeField] private float spawnZ = 30f;
     [SerializeField] private float spawnY = 1f;
     [SerializeField] private float laneOffset = 3.2f;
+    [SerializeField] private float laneSpread = 1f;
 
     private float timer;
 
