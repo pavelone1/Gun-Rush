@@ -7,6 +7,9 @@ public class SquadManager : MonoBehaviour
     [SerializeField] private Transform player;
     [SerializeField] private GameObject squadMemberPrefab;
 
+    [Header("Squad Health")]
+    [SerializeField, Range(0.01f, 2f)] private float squadHealthPercent = 0.5f;
+
     [Header("Formation Size Limits")]
     [SerializeField] private float maxFormationRadius = 2.8f;
     [SerializeField] private float innerRingRadius = 1.2f;
@@ -67,14 +70,53 @@ public class SquadManager : MonoBehaviour
             memberWeaponState.CopyFrom(playerWeaponState);
         }
 
-        SquadMemberHealth memberHealth = member.GetComponent<SquadMemberHealth>();
-        if (memberHealth != null)
-        {
-            memberHealth.Died += HandleSquadMemberDied;
-        }
+        ApplySquadHealthFromPlayer(member);
 
         squadMembers.Add(member);
         RebuildFormation();
+    }
+
+    public void UpgradePlayerHealth(float amount)
+    {
+        if (amount <= 0f || player == null) return;
+
+        Health playerHealth = player.GetComponent<Health>();
+        if (playerHealth == null) return;
+
+        playerHealth.AddMaxHealth(amount, amount);
+
+        float squadAmount = amount * squadHealthPercent;
+
+        for (int i = squadMembers.Count - 1; i >= 0; i--)
+        {
+            GameObject member = squadMembers[i];
+
+            if (member == null)
+            {
+                squadMembers.RemoveAt(i);
+                continue;
+            }
+
+            SquadMemberHealth memberHealth = member.GetComponent<SquadMemberHealth>();
+            if (memberHealth != null)
+            {
+                memberHealth.AddMaxHealth(squadAmount, squadAmount);
+            }
+        }
+    }
+
+    private void ApplySquadHealthFromPlayer(GameObject member)
+    {
+        if (member == null || player == null) return;
+
+        Health playerHealth = player.GetComponent<Health>();
+        SquadMemberHealth memberHealth = member.GetComponent<SquadMemberHealth>();
+
+        if (playerHealth == null || memberHealth == null) return;
+
+        float squadMaxHealth = playerHealth.MaxHealth * squadHealthPercent;
+        memberHealth.SetHealth(squadMaxHealth, true);
+        memberHealth.Died += HandleSquadMemberDied;
     }
 
     private void HandleSquadMemberDied(SquadMemberHealth deadHealth)
