@@ -1,16 +1,16 @@
 using System;
 using UnityEngine;
 
-public class Health : MonoBehaviour
+public class SquadMemberHealth : MonoBehaviour
 {
-    [SerializeField] private float maxHealth = 10f;
-    [SerializeField] private float currentHealth = 10f;
-    [SerializeField] private bool triggerGameOverOnDeath = true;
+    [SerializeField] private float maxHealth = 5f;
+    [SerializeField] private float currentHealth = 5f;
+    [SerializeField] private bool destroyOnDeath = true;
 
     public float MaxHealth => maxHealth;
     public float CurrentHealth => currentHealth;
 
-    public event Action<Health> Died;
+    public event Action<SquadMemberHealth> Died;
 
     private void Awake()
     {
@@ -49,10 +49,9 @@ public class Health : MonoBehaviour
     {
         Died?.Invoke(this);
 
-        if (triggerGameOverOnDeath)
+        if (destroyOnDeath)
         {
-            Debug.Log("Game Over");
-            Time.timeScale = 0f;
+            Destroy(gameObject);
         }
     }
 }

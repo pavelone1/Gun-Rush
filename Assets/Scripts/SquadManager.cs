@@ -8,7 +8,7 @@ public class SquadManager : MonoBehaviour
     [SerializeField] private GameObject squadMemberPrefab;
 
     [Header("Squad Health")]
-    [SerializeField, Range(0.1f, 2f)] private float squadHealthPercent = 0.5f;
+    [SerializeField, Range(0.01f, 2f)] private float squadHealthPercent = 0.5f;
 
     [Header("Formation Size Limits")]
     [SerializeField] private float maxFormationRadius = 2.8f;

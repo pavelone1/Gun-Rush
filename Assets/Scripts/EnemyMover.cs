@@ -4,8 +4,7 @@ public class EnemyMover : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 8f;
     [SerializeField] private float destroyZ = -10f;
-    [SerializeField] private float contactDamage = 1f;
-
+ 
     private void Update()
     {
         transform.position += Vector3.back * moveSpeed * Time.deltaTime;
@@ -18,12 +17,37 @@ public class EnemyMover : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Enemy")) return;
+        if (other.CompareTag("Enemy"))
+        {
+            return;
+        }
 
-        Health health = other.GetComponent<Health>();
-        if (health == null) return;
+        EnemyStats enemyStats = GetComponent<EnemyStats>();
+        float damage = enemyStats != null ? enemyStats.ContactDamage : 1f;
 
-        health.TakeDamage(contactDamage);
-        Destroy(gameObject);
+        Health playerHealth = other.GetComponentInParent<Health>();
+        if (playerHealth == null)
+        {
+            playerHealth = other.transform.root.GetComponent<Health>();
+        }
+
+        if (playerHealth != null)
+        {
+            playerHealth.TakeDamage(damage);
+            Destroy(gameObject);
+            return;
+        }
+
+        SquadMemberHealth squadHealth = other.GetComponentInParent<SquadMemberHealth>();
+        if (squadHealth == null)
+        {
+            squadHealth = other.transform.root.GetComponent<SquadMemberHealth>();
+        }
+
+        if (squadHealth != null)
+        {
+            squadHealth.TakeDamage(damage);
+            Destroy(gameObject);
+        }
     }
 }

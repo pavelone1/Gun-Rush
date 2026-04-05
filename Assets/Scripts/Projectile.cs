@@ -4,6 +4,7 @@ public class Projectile : MonoBehaviour
 {
     [SerializeField] private float speed = 20f;
     [SerializeField] private float destroyZ = 50f;
+    [SerializeField] private float damage = 1f;
 
     private void Update()
     {
@@ -17,10 +18,22 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Enemy"))
+        if (!other.CompareTag("Enemy"))
         {
-            Destroy(other.gameObject);
-            Destroy(gameObject);
+            return;
         }
+
+        EnemyStats enemyStats = other.GetComponentInParent<EnemyStats>();
+        if (enemyStats == null)
+        {
+            enemyStats = other.transform.root.GetComponent<EnemyStats>();
+        }
+
+        if (enemyStats != null)
+        {
+            enemyStats.TakeDamage(damage);
+        }
+
+        Destroy(gameObject);
     }
 }

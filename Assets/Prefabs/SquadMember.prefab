@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 9137715874150261144}
   - component: {fileID: 1563587572116228970}
   - component: {fileID: 5834853056214058006}
-  - component: {fileID: -3542357135960842020}
+  - component: {fileID: -3684257555240217599}
   m_Layer: 0
   m_Name: SquadMember
   m_TagString: Untagged
@@ -103,7 +103,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 2e1eb53b3ec77404aa391d0006223084, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -142,7 +142,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -193,7 +193,7 @@ MonoBehaviour:
   player: {fileID: 3507582992987789808}
   offset: {x: 0, y: 0, z: 0}
   followSpeed: 10
---- !u!114 &-3542357135960842020
+--- !u!114 &-3684257555240217599
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -202,10 +202,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8831329525579829732}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c0129e34306d1b4895db5249b0a8fe3, type: 3}
+  m_Script: {fileID: 11500000, guid: 82126860d4cd6214cb7dfb5660e10f21, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
-  maxHealth: 10
-  currentHealth: 10
+  m_EditorClassIdentifier: Assembly-CSharp::SquadMemberHealth
+  maxHealth: 5
+  currentHealth: 5
   destroyOnDeath: 1
-  triggerGameOverOnDeath: 0
